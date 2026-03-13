@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate | The Operating System for Modern Indian Messes</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfaf8; 
+            color: #1e293b; 
+            overflow-x: hidden;
+        }
+
+        /* --- View Transition API --- */
+        @view-transition { navigation: auto; }
+        ::view-transition-old(root) { animation: 0.4s cubic-bezier(0.4, 0, 0.2, 1) both fade-out; }
+        ::view-transition-new(root) { animation: 0.4s cubic-bezier(0.4, 0, 0.2, 1) both fade-in; }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fade-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+
+        /* --- Hero Section Styling --- */
+        .hero-section {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.4;
+            filter: contrast(1.1) saturate(1.2);
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 10;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        /* --- Horizontal Scroll Section (Mobile First CSS) --- */
+        .horizontal-scroll-container {
+            position: relative;
+        }
+
+        .sticky-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background-color: #0f172a; 
+        }
+
+        .horizontal-content {
+            display: flex;
+            flex-direction: column; /* Stack vertically on mobile */
+            width: 100%;
+        }
+
+        .horizontal-panel {
+            width: 100%;
+            min-height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 1.5rem; /* Generous padding for mobile */
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Desktop Specific Rules (The "Zoox" horizontal scroll) */
+        @media (min-width: 768px) {
+            .horizontal-scroll-container {
+                height: 300vh; 
+            }
+            .sticky-wrapper {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+            }
+            .horizontal-content {
+                flex-direction: row; /* Layout side-by-side on desktop */
+                height: 100%;
+                width: max-content; 
+            }
+            .horizontal-panel {
+                width: 100vw;
+                height: 100vh;
+                padding: 4rem;
+            }
+        }
+
+        /* App-like card styling for panels */
+        .feature-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 20;
+        }
+
+        .feature-video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 1rem;
+            background-color: #f1f5f9;
+        }
+
+        /* --- Navigation --- */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 237, 213, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="font-bold text-2xl tracking-tight text-white transition-colors duration-300" id="nav-logo">
+                Mess<span class="text-orange-500">Mate</span>
+            </div>
+            <div class="flex gap-4">
+                <a href="index.html" class="text-white hover:text-orange-400 font-medium py-2 px-4 transition-colors hidden sm:block" id="nav-login">Log In</a>
+                <a href="index.html" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-xl hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <video class="video-background" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070&auto=format&fit=crop">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-in-a-commercial-kitchen-43486-large.mp4" type="video/mp4">
+        </video>
+        
+        <div class="hero-content mt-16">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-tight hero-text text-white">
+                Stop Wasting Food.<br>Start Managing Smart.
+            </h1>
+            <p class="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto font-light hero-subtext">
+                The operating system for modern Indian messes. Digitize attendance, track daily Veg/Non-Veg preferences, and optimize profits with a simple QR scan.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center hero-buttons">
+                <a href="index.html" class="bg-orange-500 text-white font-bold py-4 px-8 rounded-xl hover:bg-orange-600 transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)] hover:scale-105">
+                    Register Your Mess
+                </a>
+                <a href="platform.html" class="bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold py-4 px-8 rounded-xl hover:bg-white/20 transition-all hover:scale-105">
+                    Find a Mess Near You
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-white relative z-10">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-16 text-slate-800 reveal-up">The Traditional System is Broken.</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 reveal-up" data-delay="0.1">
+                    <div class="text-4xl mb-6 text-orange-500 bg-orange-100/50 w-20 h-20 mx-auto rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Massive Food Waste</h3>
+                    <p class="text-slate-500">Cooking blind leads to over-preparation. You lose money every day on food that gets thrown away because you don't know who is showing up.</p>
+                </div>
+                <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 reveal-up" data-delay="0.2">
+                    <div class="text-4xl mb-6 text-blue-500 bg-blue-100/50 w-20 h-20 mx-auto rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Paper Register Chaos</h3>
+                    <p class="text-slate-500">Manual tick-marks lead to proxy eating and end-of-month billing disputes. Calculating rebates for holidays takes hours.</p>
+                </div>
+                <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 reveal-up" data-delay="0.3">
+                    <div class="text-4xl mb-6 text-red-500 bg-red-100/50 w-20 h-20 mx-auto rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-id-card-clip"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Friction for Students</h3>
+                    <p class="text-slate-500">Losing physical ID cards, not knowing the daily menu, and struggling to communicate when they are fasting or out of town.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="horizontal-scroll-container bg-slate-900" id="how-it-works">
+        <div class="sticky-wrapper">
+            <div class="horizontal-content" id="scroll-track">
+                
+                <div class="horizontal-panel">
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?q=80&w=1950&auto=format&fit=crop" class="w-full h-full object-cover opacity-100" alt="Commercial Kitchen">
+                        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/70 via-slate-900/50 to-slate-900/10"></div>
+                    </div>
+
+                    <div class="relative z-10 flex flex-col md:flex-row gap-8 md:gap-12 items-center w-full max-w-6xl">
+                        <div class="flex-1 text-white text-center md:text-left">
+                            <span class="text-orange-500 font-bold tracking-wider uppercase text-sm mb-2 block"><i class="fa-solid fa-store mr-2"></i> For Mess Owners</span>
+                            <h2 class="text-3xl md:text-5xl font-bold mb-6">Know exactly what to cook, before you cook it.</h2>
+                            <p class="text-slate-300 text-base md:text-lg mb-8 leading-relaxed">Our live dashboard aggregates your members' preferences. Instantly see how many Veg, Non-Veg, or Fasting meals you need today. Zero guesswork. Zero waste.</p>
+                            <ul class="space-y-4 text-left inline-block md:block mx-auto">
+                                <li class="flex items-center gap-3 text-slate-200"><div class="bg-orange-500/20 text-orange-500 w-8 h-8 flex items-center justify-center rounded-full"><i class="fa-solid fa-check"></i></div> Live Expectancy Dashboard</li>
+                                <li class="flex items-center gap-3 text-slate-200"><div class="bg-orange-500/20 text-orange-500 w-8 h-8 flex items-center justify-center rounded-full"><i class="fa-solid fa-qrcode"></i></div> Lightning Fast QR Scanner</li>
+                            </ul>
+                        </div>
+                        <div class="flex-1 w-full relative flex justify-center mt-8 md:mt-0">
+                            <div class="feature-card transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
+                                <video class="feature-video" autoplay loop muted playsinline>
+                                    <source src="https://assets.mixkit.co/videos/preview/mixkit-close-up-of-a-person-scrolling-through-a-dashboard-on-a-32092-large.mp4" type="video/mp4">
+                                </video>
+                                <div class="mt-4 flex justify-between items-center px-2">
+                                    <div class="text-left">
+                                        <p class="text-xs font-bold text-slate-400 uppercase">Live Analytics</p>
+                                        <p class="font-bold text-slate-800">Owner Dashboard</p>
+                                    </div>
+                                    <div class="text-2xl text-slate-300"><i class="fa-solid fa-chart-simple"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="horizontal-panel">
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-100" alt="Students in cafeteria">
+                        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/70 via-slate-900/50 to-slate-900/10"></div>
+                    </div>
+
+                    <div class="relative z-10 flex flex-col md:flex-row gap-8 md:gap-12 items-center w-full max-w-6xl">
+                        <div class="flex-1 text-white text-center md:text-left">
+                            <span class="text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block"><i class="fa-solid fa-user-graduate mr-2"></i> For Students</span>
+                            <h2 class="text-3xl md:text-5xl font-bold mb-6">Your mess ID is now on your phone.</h2>
+                            <p class="text-slate-300 text-base md:text-lg mb-8 leading-relaxed">No more lost cards. Use your dynamic QR code to scan in. Going home for the weekend? Mark your leave in the app so you don't get billed for meals you didn't eat.</p>
+                            <ul class="space-y-4 text-left inline-block md:block mx-auto">
+                                <li class="flex items-center gap-3 text-slate-200"><div class="bg-blue-500/20 text-blue-400 w-8 h-8 flex items-center justify-center rounded-full"><i class="fa-solid fa-mobile-screen"></i></div> Dynamic QR Identity</li>
+                                <li class="flex items-center gap-3 text-slate-200"><div class="bg-blue-500/20 text-blue-400 w-8 h-8 flex items-center justify-center rounded-full"><i class="fa-solid fa-calendar-check"></i></div> Daily Menu Preferences</li>
+                            </ul>
+                        </div>
+                        <div class="flex-1 w-full flex justify-center mt-8 md:mt-0">
+                            <div class="feature-card transform md:-rotate-2 hover:rotate-0 transition-transform duration-500">
+                                <video class="feature-video" autoplay loop muted playsinline style="object-position: center;">
+                                    <source src="https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-using-a-smartphone-41628-large.mp4" type="video/mp4">
+                                </video>
+                                <div class="mt-4 flex justify-between items-center px-2">
+                                    <div class="text-left">
+                                        <p class="text-xs font-bold text-slate-400 uppercase">Frictionless Access</p>
+                                        <p class="font-bold text-slate-800">Member Web App</p>
+                                    </div>
+                                    <div class="text-2xl text-slate-300"><i class="fa-solid fa-qrcode"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="horizontal-panel">
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-100" alt="Indian Food Spread">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/40"></div>
+                    </div>
+
+                    <div class="relative z-10 flex flex-col items-center text-center w-full max-w-4xl text-white">
+                        <div class="text-5xl mb-6 text-orange-500 bg-white/10 w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                        <h2 class="text-3xl md:text-6xl font-bold mb-6 drop-shadow-lg">Find the perfect mess.</h2>
+                        <p class="text-slate-300 text-base md:text-xl mb-10 leading-relaxed max-w-2xl drop-shadow-md">Moving to a new city? Use MessMate's discovery platform to find nearby canteens, compare monthly subscription prices, and join instantly.</p>
+                        <a href="platform.html" class="bg-white text-slate-900 font-bold py-4 px-10 rounded-xl hover:bg-slate-100 transition-all shadow-xl hover:scale-105 text-lg flex items-center gap-3">
+                            Explore Canteens <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-orange-50 border-t border-orange-100">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6 text-slate-800 reveal-up">Ready to upgrade your canteen?</h2>
+            
+            <p class="text-base md:text-lg text-slate-600 mb-10 reveal-up" data-delay="0.1">Join the digital revolution. Set up your mess in under 5 minutes and stop losing money to food waste today.</p>
+            
+            <div class="bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-orange-100 reveal-up" data-delay="0.2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="text-left">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Start your free trial</h3>
+                        <p class="text-slate-500 text-sm mb-6">No credit card required. Setup takes 2 minutes.</p>
+                        <a href="index.html" class="block w-full text-center bg-orange-500 text-white font-bold py-4 rounded-xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-200">
+                            Create Owner Account
+                        </a>
+                    </div>
+                    <div class="hidden md:block border-l border-slate-100 pl-8 text-left">
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-green-500"><i class="fa-solid fa-arrow-trend-up text-xl mr-1"></i> ~15%</span>
+                            <p class="text-sm font-bold text-slate-600">Average Profit Increase</p>
+                            <p class="text-xs text-slate-400">By eliminating daily food over-preparation.</p>
+                        </div>
+                        <div>
+                            <span class="text-3xl font-bold text-blue-500"><i class="fa-regular fa-clock text-xl mr-1"></i> 10 hrs</span>
+                            <p class="text-sm font-bold text-slate-600">Saved Monthly</p>
+                            <p class="text-xs text-slate-400">On manual register tallying and billing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-white border-t border-slate-100 py-12">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="font-bold text-xl text-slate-800">
+                Mess<span class="text-orange-500">Mate</span>
+            </div>
+            <div class="flex gap-6 text-sm text-slate-500 font-medium">
+                <a href="#" class="hover:text-orange-500">Privacy</a>
+                <a href="#" class="hover:text-orange-500">Terms</a>
+                <a href="index.html" class="hover:text-orange-500">Log In</a>
+            </div>
+            <p class="text-xs text-slate-400">© 2024 MessMate. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        });
+
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time)=>{ lenis.raf(time * 1000) });
+        gsap.ticker.lagSmoothing(0, 0);
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 2. The Responsive Horizontal Scroll Animation
+        const scrollTrack = document.getElementById('scroll-track');
+        let mm = gsap.matchMedia();
+
+        // ONLY apply the horizontal scroll/pinning on Desktop (768px and up)
+        mm.add("(min-width: 768px)", () => {
+            gsap.to(scrollTrack, {
+                // Move the track left by its total width minus the screen width
+                x: () => -(scrollTrack.scrollWidth - window.innerWidth),
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".horizontal-scroll-container",
+                    start: "top top", 
+                    end: "bottom bottom", 
+                    scrub: 1, 
+                    invalidateOnRefresh: true 
+                }
+            });
+        });
+        // On mobile, the CSS automatically stacks the elements vertically and GSAP does nothing here.
+
+        // 3. Simple Hero Text Animation on Load
+        gsap.from(".hero-text", { y: 50, opacity: 0, duration: 1, ease: "power3.out", delay: 0.2 });
+        gsap.from(".hero-subtext", { y: 30, opacity: 0, duration: 1, ease: "power3.out", delay: 0.4 });
+        gsap.from(".hero-buttons", { y: 20, opacity: 0, duration: 1, ease: "power3.out", delay: 0.6 });
+
+        // 4. Fade Up Reveal for Standard Sections
+        const revealElements = document.querySelectorAll('.reveal-up');
+        revealElements.forEach((el) => {
+            const delayTime = el.getAttribute('data-delay') || 0; 
+
+            gsap.fromTo(el, 
+                { y: 50, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    delay: Number(delayTime),
+                    ease: "power2.out",
+                    scrollTrigger: { 
+                        trigger: el,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+
+        // 5. Navbar logic
+        const navbar = document.getElementById('navbar');
+        const navLogo = document.getElementById('nav-logo');
+        const navLogin = document.getElementById('nav-login');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-sm', 'glass-nav');
+                navbar.classList.remove('bg-transparent');
+                navLogo.classList.replace('text-white', 'text-slate-800');
+                navLogin.classList.replace('text-white', 'text-slate-600');
+            } else {
+                navbar.classList.remove('shadow-sm', 'glass-nav');
+                navbar.classList.add('bg-transparent');
+                navLogo.classList.replace('text-slate-800', 'text-white');
+                navLogin.classList.replace('text-slate-600', 'text-white');
+            }
+        });
+    </script>
+</body>
+</html>
